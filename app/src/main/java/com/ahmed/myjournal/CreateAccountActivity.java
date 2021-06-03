@@ -92,7 +92,7 @@ public class CreateAccountActivity extends AppCompatActivity {
 
                 }else {
 
-                    Toast.makeText(CreateAccountActivity.this , "Empty Fields Not Allowed" , Toast.LENGTH_LONG).show();
+                    Toast.makeText(CreateAccountActivity.this , "Please fill all the fields" , Toast.LENGTH_LONG).show();
                 }
             }
         });
@@ -161,7 +161,7 @@ public class CreateAccountActivity extends AppCompatActivity {
                                             @Override
                                             public void onFailure(@NonNull Exception e) {
 
-
+                                                Toast.makeText(CreateAccountActivity.this , "" + e.getMessage() , Toast.LENGTH_SHORT).show();
                                             }
                                         });
 
@@ -170,7 +170,7 @@ public class CreateAccountActivity extends AppCompatActivity {
 
                             }else {
                                 //something went wrong
-
+                                Toast.makeText(CreateAccountActivity.this , "" + task.getException() , Toast.LENGTH_SHORT).show();
                             }
                         }
                     })
@@ -178,12 +178,14 @@ public class CreateAccountActivity extends AppCompatActivity {
                         @Override
                         public void onFailure(@NonNull Exception e) {
 
+                            Toast.makeText(CreateAccountActivity.this , "" + e.getMessage() , Toast.LENGTH_SHORT).show();
 
                         }
                     });
 
         }else {
 
+            Toast.makeText(CreateAccountActivity.this , "Please fill all the fields", Toast.LENGTH_SHORT).show();
 
         }
     }

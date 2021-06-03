@@ -90,39 +90,43 @@ public class LoginActivity extends AppCompatActivity {
                 @Override
                 public void onComplete(@NonNull Task <AuthResult> task) {
 
-                    FirebaseUser user = firebaseAuth.getCurrentUser();
-                    assert user != null;
-                    String currentUserId = user.getUid();
+                    if(task.isSuccessful()) {
 
-                    collectionReference
-                            .whereEqualTo("userId", currentUserId)
-                            .addSnapshotListener(new EventListener <QuerySnapshot>() {
-                                @Override
-                                public void onEvent(@Nullable QuerySnapshot queryDocumentSnapshots , @Nullable FirebaseFirestoreException error) {
+                        FirebaseUser user = firebaseAuth.getCurrentUser();
+                        assert user != null;
+                        String currentUserId = user.getUid();
 
-                                    if(error != null){
+                        collectionReference
+                                .whereEqualTo("userId" , currentUserId)
+                                .addSnapshotListener(new EventListener <QuerySnapshot>() {
+                                    @Override
+                                    public void onEvent(@Nullable QuerySnapshot queryDocumentSnapshots , @Nullable FirebaseFirestoreException error) {
 
-                                    }
+                                        if(error == null) {
 
-                                    assert queryDocumentSnapshots != null;
-                                    if(!queryDocumentSnapshots.isEmpty()){
+                                            assert queryDocumentSnapshots != null;
+                                            if(!queryDocumentSnapshots.isEmpty()) {
 
-                                        progressBar.setVisibility(View.INVISIBLE);
+                                                progressBar.setVisibility(View.INVISIBLE);
 
-                                        for(QueryDocumentSnapshot snapshot : queryDocumentSnapshots){
+                                                for(QueryDocumentSnapshot snapshot : queryDocumentSnapshots) {
 
-                                            JournalApi journalApi = JournalApi.getInstance();
+                                                    JournalApi journalApi = JournalApi.getInstance();
 
-                                            journalApi.setUsername(snapshot.getString("username"));
-                                            journalApi.setUserId(snapshot.getString("userId"));
+                                                    journalApi.setUsername(snapshot.getString("username"));
+                                                    journalApi.setUserId(snapshot.getString("userId"));
 
-
-                                            //Go to ListActivity
-                                            startActivity(new Intent(LoginActivity.this, PostJournalActivity.class));
+                                                    //Go to ListActivity
+                                                    startActivity(new Intent(LoginActivity.this , PostJournalActivity.class));
+                                                }
+                                            }
                                         }
                                     }
-                                }
-                            });
+                                });
+                    }else {
+
+                        Toast.makeText(LoginActivity.this , "" + task.getException() , Toast.LENGTH_SHORT).show();
+                    }
                 }
             })
             .addOnFailureListener(new OnFailureListener() {
@@ -131,6 +135,7 @@ public class LoginActivity extends AppCompatActivity {
 
                     progressBar.setVisibility(View.INVISIBLE);
 
+                    Toast.makeText(LoginActivity.this , "" + e.getMessage() , Toast.LENGTH_SHORT).show();
                 }
             });
 

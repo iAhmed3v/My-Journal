@@ -15,6 +15,7 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.ahmed.myjournal.model.Journal;
 import com.google.android.gms.tasks.OnFailureListener;
@@ -176,11 +177,9 @@ public class PostJournalActivity extends AppCompatActivity implements View.OnCli
                                                 @Override
                                                 public void onFailure(@NonNull Exception e) {
 
-                                                    Log.w("Error" , "" + e.getMessage());
+                                                    Toast.makeText(PostJournalActivity.this , "" + e.getMessage() , Toast.LENGTH_SHORT).show();
                                                 }
                                             });
-
-                                    //Todo: save a journal instance
                                 }
                             });
 
@@ -192,6 +191,7 @@ public class PostJournalActivity extends AppCompatActivity implements View.OnCli
 
                             progressBar.setVisibility(View.INVISIBLE);
 
+                            Toast.makeText(PostJournalActivity.this , "" + e.getMessage() , Toast.LENGTH_SHORT).show();
                         }
                     });
 
@@ -200,6 +200,7 @@ public class PostJournalActivity extends AppCompatActivity implements View.OnCli
 
             progressBar.setVisibility(View.INVISIBLE);
 
+            Toast.makeText(this , "please fill all the fields" , Toast.LENGTH_SHORT).show();
         }
     }
 
@@ -207,13 +208,10 @@ public class PostJournalActivity extends AppCompatActivity implements View.OnCli
     protected void onActivityResult(int requestCode , int resultCode , @Nullable Intent data) {
         super.onActivityResult(requestCode , resultCode , data);
 
-        if(requestCode == GALLERY_CODE && resultCode == RESULT_OK) {
+        if(requestCode == GALLERY_CODE && resultCode == RESULT_OK && data != null) {
 
-            if(data != null) {
-
-                imageUri = data.getData(); //We have the actual path to the image
-                postImageView.setImageURI(imageUri); //Show image
-            }
+            imageUri = data.getData(); //We have the actual path to the image
+            postImageView.setImageURI(imageUri); //Show image
         }
     }
 

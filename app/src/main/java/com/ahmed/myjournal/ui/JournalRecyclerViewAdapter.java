@@ -84,11 +84,8 @@ public class JournalRecyclerViewAdapter extends RecyclerView.Adapter<JournalRecy
     public class ViewHolder extends RecyclerView.ViewHolder{
 
         public TextView title, thought, dateAdded, name;
-
         public ImageView image;
-        public ImageButton shareButton;
-         String userId;
-         String username;
+        public ImageButton shareButton, deleteButton, editButton;
 
         public ViewHolder(@NonNull final View itemView, final Context ctx) {
             super(itemView);
@@ -103,36 +100,35 @@ public class JournalRecyclerViewAdapter extends RecyclerView.Adapter<JournalRecy
             name = itemView.findViewById(R.id.journalRowTextView);
 
             shareButton = itemView.findViewById(R.id.journalRowShareButton);
+            deleteButton = itemView.findViewById(R.id.delete_btn);
+            editButton = itemView.findViewById(R.id.edit_btn);
 
-            shareButton.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
+            shareButton.setOnClickListener(v -> {
 
-                    //share image
-                    Drawable drawable = image.getDrawable();
-                    Bitmap bitmap = ((BitmapDrawable)drawable).getBitmap();
+                //share image
+                Drawable drawable = image.getDrawable();
+                Bitmap bitmap = ((BitmapDrawable)drawable).getBitmap();
 
-                    try {
-                        File file = new File(ctx.getApplicationContext().getExternalCacheDir(), File.separator +"photo.jpg");
-                        FileOutputStream fOut = new FileOutputStream(file);
-                        bitmap.compress(Bitmap.CompressFormat.JPEG, 100, fOut);
-                        fOut.flush();
-                        fOut.close();
-                        file.setReadable(true, false);
-                        final Intent intent = new Intent(android.content.Intent.ACTION_SEND);
-                        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                        Uri photoURI = FileProvider.getUriForFile(ctx.getApplicationContext(), BuildConfig.APPLICATION_ID +".provider", file);
+                try {
+                    File file = new File(ctx.getApplicationContext().getExternalCacheDir(), File.separator +"photo.jpg");
+                    FileOutputStream fOut = new FileOutputStream(file);
+                    bitmap.compress(Bitmap.CompressFormat.JPEG, 100, fOut);
+                    fOut.flush();
+                    fOut.close();
+                    file.setReadable(true, false);
+                    final Intent intent = new Intent(Intent.ACTION_SEND);
+                    intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                    Uri photoURI = FileProvider.getUriForFile(ctx.getApplicationContext(), BuildConfig.APPLICATION_ID +".provider", file);
 
-                        intent.putExtra(Intent.EXTRA_SUBJECT, title.getText().toString());
-                        intent.putExtra(Intent.EXTRA_TEXT, thought.getText().toString());
-                        intent.putExtra(Intent.EXTRA_STREAM, photoURI);
-                        intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
-                        intent.setType("image/jpg");
+                    intent.putExtra(Intent.EXTRA_SUBJECT, title.getText().toString());
+                    intent.putExtra(Intent.EXTRA_TEXT, thought.getText().toString());
+                    intent.putExtra(Intent.EXTRA_STREAM, photoURI);
+                    intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+                    intent.setType("image/jpg");
 
-                        ctx.startActivity(intent);
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                    }
+                    ctx.startActivity(intent);
+                } catch (Exception e) {
+                    e.printStackTrace();
                 }
             });
         }
