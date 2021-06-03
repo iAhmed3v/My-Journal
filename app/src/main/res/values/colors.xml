@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="colorPrimary">@color/backgroundEndColor</color>
+    <color name="colorPrimaryDark">@color/backgroundEndColor</color>
+    <color name="colorAccent">#c0ca33</color>
+    <color name="yellowBackground">#ffde03</color>
+    <color name="backgroundStartColor">#3a1c71</color>
+    <color name="backgroundCenterColor">#d76d77</color>
+    <color name="backgroundEndColor">#ffaf7b</color>
+</resources>

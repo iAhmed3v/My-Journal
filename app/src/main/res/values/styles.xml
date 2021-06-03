@@ -1,0 +1,26 @@
+<resources>
+    <!-- Base application theme. -->
+    <style name="AppTheme" parent="Theme.AppCompat.Light.DarkActionBar">
+        <!-- Customize your theme here. -->
+        <item name="colorPrimary">@color/colorPrimary</item>
+        <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
+        <item name="colorAccent">@color/colorAccent</item>
+    </style>
+
+    <style name="customEditTextTheme">
+        <item name="colorControlNormal">@color/backgroundEndColor</item>
+        <item name="colorControlActivated">@color/backgroundEndColor</item>
+        <item name="colorControlHighlight">@color/backgroundEndColor</item>
+        <item name="android:textColorHighlight">@color/backgroundEndColor</item>
+    </style>
+
+    <style name="customProgressBarTheme">
+        <item name="android:backgroundTint">@color/backgroundEndColor</item>
+        <item name="android:foregroundTint">@color/backgroundEndColor</item>
+        <item name="android:indeterminateTint">@color/backgroundEndColor</item>
+        <item name="android:progressBackgroundTint">@color/backgroundEndColor</item>
+        <item name="android:progressTint">@color/backgroundEndColor</item>
+        <item name="android:secondaryProgressTint">@color/backgroundEndColor</item>
+    </style>
+
+</resources>
