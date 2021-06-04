@@ -59,23 +59,14 @@ public class LoginActivity extends AppCompatActivity {
         passwordEditText = findViewById(R.id.passwordEditText);
         progressBar = findViewById(R.id.progressBar);
 
-        createAccountButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
+        createAccountButton.setOnClickListener(v -> {
 
-                Intent intent = new Intent(LoginActivity.this, CreateAccountActivity.class);
-                startActivity(intent);
-            }
+            Intent intent = new Intent(LoginActivity.this, CreateAccountActivity.class);
+            startActivity(intent);
         });
 
-        loginButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-
-               loginEmailPasswordUser(emailTextView.getText().toString().trim()
-                                     ,passwordEditText.getText().toString().trim());
-            }
-        });
+        loginButton.setOnClickListener(v -> loginEmailPasswordUser(emailTextView.getText().toString().trim()
+                              ,passwordEditText.getText().toString().trim()));
     }
 
     private void loginEmailPasswordUser(String email , String password) {
@@ -86,57 +77,48 @@ public class LoginActivity extends AppCompatActivity {
 
             firebaseAuth.signInWithEmailAndPassword(email, password)
 
-            .addOnCompleteListener(new OnCompleteListener <AuthResult>() {
-                @Override
-                public void onComplete(@NonNull Task <AuthResult> task) {
+            .addOnCompleteListener(task -> {
 
-                    if(task.isSuccessful()) {
+                if(task.isSuccessful()) {
 
-                        FirebaseUser user = firebaseAuth.getCurrentUser();
-                        assert user != null;
-                        String currentUserId = user.getUid();
+                    FirebaseUser user = firebaseAuth.getCurrentUser();
+                    assert user != null;
+                    String currentUserId = user.getUid();
 
-                        collectionReference
-                                .whereEqualTo("userId" , currentUserId)
-                                .addSnapshotListener(new EventListener <QuerySnapshot>() {
-                                    @Override
-                                    public void onEvent(@Nullable QuerySnapshot queryDocumentSnapshots , @Nullable FirebaseFirestoreException error) {
+                    collectionReference
+                            .whereEqualTo("userId" , currentUserId)
+                            .addSnapshotListener((queryDocumentSnapshots , error) -> {
 
-                                        if(error == null) {
+                                if(error == null) {
 
-                                            assert queryDocumentSnapshots != null;
-                                            if(!queryDocumentSnapshots.isEmpty()) {
+                                    assert queryDocumentSnapshots != null;
+                                    if(!queryDocumentSnapshots.isEmpty()) {
 
-                                                progressBar.setVisibility(View.INVISIBLE);
+                                        progressBar.setVisibility(View.INVISIBLE);
 
-                                                for(QueryDocumentSnapshot snapshot : queryDocumentSnapshots) {
+                                        for(QueryDocumentSnapshot snapshot : queryDocumentSnapshots) {
 
-                                                    JournalApi journalApi = JournalApi.getInstance();
+                                            JournalApi journalApi = JournalApi.getInstance();
 
-                                                    journalApi.setUsername(snapshot.getString("username"));
-                                                    journalApi.setUserId(snapshot.getString("userId"));
+                                            journalApi.setUsername(snapshot.getString("username"));
+                                            journalApi.setUserId(snapshot.getString("userId"));
 
-                                                    //Go to ListActivity
-                                                    startActivity(new Intent(LoginActivity.this , PostJournalActivity.class));
-                                                }
-                                            }
+                                            //Go to ListActivity
+                                            startActivity(new Intent(LoginActivity.this , JournalListActivity.class));
                                         }
                                     }
-                                });
-                    }else {
+                                }
+                            });
+                }else {
 
-                        Toast.makeText(LoginActivity.this , "" + task.getException() , Toast.LENGTH_SHORT).show();
-                    }
+                    Toast.makeText(LoginActivity.this , "" + task.getException() , Toast.LENGTH_SHORT).show();
                 }
             })
-            .addOnFailureListener(new OnFailureListener() {
-                @Override
-                public void onFailure(@NonNull Exception e) {
+            .addOnFailureListener(e -> {
 
-                    progressBar.setVisibility(View.INVISIBLE);
+                progressBar.setVisibility(View.INVISIBLE);
 
-                    Toast.makeText(LoginActivity.this , "" + e.getMessage() , Toast.LENGTH_SHORT).show();
-                }
+                Toast.makeText(LoginActivity.this , "" + e.getMessage() , Toast.LENGTH_SHORT).show();
             });
 
         }else {

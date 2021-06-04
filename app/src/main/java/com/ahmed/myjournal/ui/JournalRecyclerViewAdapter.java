@@ -24,6 +24,7 @@ import com.ahmed.myjournal.R;
 import com.ahmed.myjournal.model.Journal;
 import com.google.android.gms.common.util.DataUtils;
 import com.squareup.picasso.Picasso;
+import com.squareup.picasso.Transformation;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -68,10 +69,13 @@ public class JournalRecyclerViewAdapter extends RecyclerView.Adapter<JournalRecy
         /*
           We Use picasso library to download and show images
          */
+
+
         Picasso.get()
                 .load(imageUrl)
                 .fit()
                 .centerCrop()
+                .error(android.R.drawable.stat_notify_error)
                 .into(viewHolder.image);
 
     }

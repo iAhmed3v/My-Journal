@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
@@ -11,12 +12,13 @@
         android:layout_height="wrap_content"
         app:cardCornerRadius="10dp"
         app:cardElevation="5dp"
+        app:cardPreventCornerOverlap="false"
         app:cardUseCompatPadding="true">
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:alpha="0.7"
+            android:alpha="1"
             android:elevation="10dp"
             android:gravity="end"
             android:orientation="horizontal">
@@ -25,11 +27,12 @@
                 android:id="@+id/journalRowTextView"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="15dp"
+                android:layout_marginStart="5dp"
                 android:layout_weight="1"
                 android:gravity="start"
                 android:padding="5dp"
                 android:text="Ahmed"
+                android:textStyle="bold"
                 android:textSize="18sp" />
 
             <ImageButton
@@ -50,7 +53,7 @@
                 android:id="@+id/journalRowShareButton"
                 android:layout_width="40dp"
                 android:layout_height="40dp"
-                android:layout_marginEnd="15dp"
+                android:layout_marginEnd="5dp"
                 android:background="@android:color/transparent"
                 android:src="@android:drawable/ic_menu_share" />
 
@@ -64,13 +67,14 @@
             <ImageView
                 android:id="@+id/journalListImageView"
                 android:layout_width="match_parent"
-                android:layout_height="250dp"
+                android:layout_height="300dp"
                 android:layout_gravity="center"
                 android:adjustViewBounds="true"
-                android:background="@drawable/scrim_gradient"
                 android:cropToPadding="true"
+                android:background="@drawable/scrim_gradient"
                 android:src="@drawable/photo"
                 app:elevation="10dp" />
+
 
             <TextView
                 android:id="@+id/journalTitleTextView"
