@@ -9,17 +9,19 @@ public class Journal {
     private String imageUrl;
     private String userId;
     private String userName;
+    private String documentId;
     private Timestamp timeAdded;
 
     public Journal() { //Very IMPORTANT for FireStore to work
     }
 
-    public Journal(String title , String thought , String imageUrl , String userId , String userName , Timestamp timeAdded) {
+    public Journal(String title , String thought , String imageUrl , String userId , String documentId, String userName , Timestamp timeAdded) {
         this.title = title;
         this.thought = thought;
         this.imageUrl = imageUrl;
         this.userId = userId;
         this.userName = userName;
+        this.documentId = documentId;
         this.timeAdded = timeAdded;
     }
 
@@ -69,5 +71,13 @@ public class Journal {
 
     public void setTimeAdded(Timestamp timeAdded) {
         this.timeAdded = timeAdded;
+    }
+
+    public String getDocumentId() {
+        return documentId;
+    }
+
+    public void setDocumentId(String documentId) {
+        this.documentId = documentId;
     }
 }

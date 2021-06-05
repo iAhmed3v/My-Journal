@@ -54,6 +54,7 @@ public class PostJournalActivity extends AppCompatActivity implements View.OnCli
     private FirebaseFirestore db = FirebaseFirestore.getInstance();
     private StorageReference storageReference;
 
+    private DocumentReference docRef;
     private CollectionReference collectionReference = db.collection("Journal");
     private Uri imageUri;
 
@@ -62,6 +63,7 @@ public class PostJournalActivity extends AppCompatActivity implements View.OnCli
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_post_journal);
 
+        docRef = db.collection("Journal").document();
 
         firebaseAuth = FirebaseAuth.getInstance();
 
@@ -88,19 +90,16 @@ public class PostJournalActivity extends AppCompatActivity implements View.OnCli
             currentUserTextView.setText(currentUsername);
         }
 
-        authStateListener = new FirebaseAuth.AuthStateListener() {
-            @Override
-            public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
+        authStateListener = firebaseAuth -> {
 
-                user = firebaseAuth.getCurrentUser();
+            user = firebaseAuth.getCurrentUser();
 
-                if(user != null) {
+            if(user != null) {
 
 
-                } else {
+            } else {
 
 
-                }
             }
         };
 
@@ -142,57 +141,38 @@ public class PostJournalActivity extends AppCompatActivity implements View.OnCli
                     .child("my_image_" + Timestamp.now().getSeconds());
 
             filepath.putFile(imageUri)
-                    .addOnSuccessListener(new OnSuccessListener <UploadTask.TaskSnapshot>() {
-                        @Override
-                        public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+                    .addOnSuccessListener(taskSnapshot -> filepath.getDownloadUrl().addOnSuccessListener(uri -> {
 
-                            filepath.getDownloadUrl().addOnSuccessListener(new OnSuccessListener <Uri>() {
-                                @Override
-                                public void onSuccess(Uri uri) {
+                        String imageUrl = uri.toString();
+                        String documentId = docRef.getId();
 
-                                    String imageUrl = uri.toString();
 
-                                    //Todo: create a journal object - model
-                                    Journal journal = new Journal();
-                                    journal.setTitle(title);
-                                    journal.setThought(thoughts);
-                                    journal.setImageUrl(imageUrl);
-                                    journal.setTimeAdded(new Timestamp(new Date()));
-                                    journal.setUserId(currentUserId);
-                                    journal.setUserName(currentUsername);
+                        //Todo: create a journal object - model
+                        Journal journal = new Journal();
+                        journal.setTitle(title);
+                        journal.setThought(thoughts);
+                        journal.setImageUrl(imageUrl);
+                        journal.setTimeAdded(new Timestamp(new Date()));
+                        journal.setUserId(currentUserId);
+                        journal.setUserName(currentUsername);
+                        journal.setDocumentId(documentId);
 
-                                    //Todo: invoke our collectionReference
-                                    collectionReference.add(journal)
-                                            .addOnSuccessListener(new OnSuccessListener <DocumentReference>() {
-                                                @Override
-                                                public void onSuccess(DocumentReference documentReference) {
+                        //Todo: invoke our collectionReference
+                        collectionReference.add(journal)
+                                .addOnSuccessListener(documentReference -> {
 
-                                                    progressBar.setVisibility(View.INVISIBLE);
+                                    progressBar.setVisibility(View.INVISIBLE);
 
-                                                    startActivity(new Intent(PostJournalActivity.this , JournalListActivity.class));
-                                                    finish();
-                                                }
-                                            })
-                                            .addOnFailureListener(new OnFailureListener() {
-                                                @Override
-                                                public void onFailure(@NonNull Exception e) {
+                                    startActivity(new Intent(PostJournalActivity.this , JournalListActivity.class));
+                                    finish();
+                                })
+                                .addOnFailureListener(e -> Toast.makeText(PostJournalActivity.this , "" + e.getMessage() , Toast.LENGTH_SHORT).show());
+                    }))
+                    .addOnFailureListener(e -> {
 
-                                                    Toast.makeText(PostJournalActivity.this , "" + e.getMessage() , Toast.LENGTH_SHORT).show();
-                                                }
-                                            });
-                                }
-                            });
+                        progressBar.setVisibility(View.INVISIBLE);
 
-                        }
-                    })
-                    .addOnFailureListener(new OnFailureListener() {
-                        @Override
-                        public void onFailure(@NonNull Exception e) {
-
-                            progressBar.setVisibility(View.INVISIBLE);
-
-                            Toast.makeText(PostJournalActivity.this , "" + e.getMessage() , Toast.LENGTH_SHORT).show();
-                        }
+                        Toast.makeText(PostJournalActivity.this , "" + e.getMessage() , Toast.LENGTH_SHORT).show();
                     });
 
 

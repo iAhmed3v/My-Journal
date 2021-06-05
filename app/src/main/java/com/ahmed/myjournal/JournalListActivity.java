@@ -12,6 +12,7 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.ahmed.myjournal.model.Journal;
 import com.ahmed.myjournal.ui.JournalRecyclerViewAdapter;
@@ -107,39 +108,33 @@ public class JournalListActivity extends AppCompatActivity {
         collectionReference.whereEqualTo("userId", JournalApi.getInstance()
                 .getUserId())
                 .get()
-                .addOnSuccessListener(new OnSuccessListener <QuerySnapshot>() {
-                    @Override
-                    public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
+                .addOnSuccessListener(queryDocumentSnapshots -> {
 
-                        if(!queryDocumentSnapshots.isEmpty()){
+                    if(!queryDocumentSnapshots.isEmpty()){
 
-                            for(QueryDocumentSnapshot journals : queryDocumentSnapshots){
+                        for(QueryDocumentSnapshot journals : queryDocumentSnapshots){
 
-                                Journal journal = journals.toObject(Journal.class);
+                            Journal journal = journals.toObject(Journal.class);
 
-                                journalList.add(journal);
-                            }
-
-                            //Invoke recyclerView
-                            journalRecyclerViewAdapter = new JournalRecyclerViewAdapter(JournalListActivity.this,
-                                    journalList);
-
-                            recyclerView.setAdapter(journalRecyclerViewAdapter);
-                            journalRecyclerViewAdapter.notifyDataSetChanged();
-
-                        }else {
-
-                            noJournalEntry.setVisibility(View.VISIBLE);
+                            journalList.add(journal);
                         }
 
+                        //Invoke recyclerView
+                        journalRecyclerViewAdapter = new JournalRecyclerViewAdapter(JournalListActivity.this,
+                                journalList);
+
+                        recyclerView.setAdapter(journalRecyclerViewAdapter);
+                        journalRecyclerViewAdapter.notifyDataSetChanged();
+
+                    }else {
+
+                        noJournalEntry.setVisibility(View.VISIBLE);
                     }
+
                 })
-                .addOnFailureListener(new OnFailureListener() {
-                    @Override
-                    public void onFailure(@NonNull Exception e) {
+                .addOnFailureListener(e -> {
 
-
-                    }
+                    Toast.makeText(this , "" + e.getMessage() , Toast.LENGTH_SHORT).show();
                 });
     }
 }
