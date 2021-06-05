@@ -11,12 +11,14 @@ import android.text.format.DateUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.appcompat.app.AlertDialog;
 import androidx.core.content.FileProvider;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -45,6 +47,12 @@ public class JournalRecyclerViewAdapter extends RecyclerView.Adapter<JournalRecy
     private FirebaseFirestore db = FirebaseFirestore.getInstance();
     private DocumentReference docRef;
     private StorageReference imageRef;
+
+    private AlertDialog.Builder builder;
+    private AlertDialog dialog;
+    private LayoutInflater inflater;
+
+    private Button cancelDialogButton, deleteDialogButton;
 
     public JournalRecyclerViewAdapter(Context context , List <Journal> journalList) {
         this.context = context;
@@ -96,30 +104,48 @@ public class JournalRecyclerViewAdapter extends RecyclerView.Adapter<JournalRecy
 
             imageRef = FirebaseStorage.getInstance().getReferenceFromUrl(imageUrl);
 
+            builder = new AlertDialog.Builder(context);
 
-            //Delete the journal from FirebaseStore
-            docRef.delete().addOnSuccessListener(unused -> {
+            inflater = LayoutInflater.from(context);
+            View view = inflater.inflate(R.layout.remove_item_dialog , null);
 
-                journalList.remove(journal);
+            deleteDialogButton = view.findViewById(R.id.delete_dialog_btn);
+            cancelDialogButton = view.findViewById(R.id.cancel_dialog_btn);
 
-                notifyDataSetChanged();
+            builder.setView(view);
+            dialog = builder.create();
+            dialog.show();
 
-                Toast.makeText(context , "Journal deleted" + docRef.getId() , Toast.LENGTH_SHORT).show();
+            deleteDialogButton.setOnClickListener(v1 -> {
 
-                //Delete the journal image from FirebaseStorage
-                imageRef.delete().addOnSuccessListener(unused1 -> {
+                //Delete the journal from FirebaseStore
+                docRef.delete().addOnSuccessListener(unused -> {
 
-                    Toast.makeText(context , "Journal image deleted" , Toast.LENGTH_SHORT).show();
+                    journalList.remove(journal);
+
+                    notifyDataSetChanged();
+
+                    Toast.makeText(context , "Journal deleted" , Toast.LENGTH_SHORT).show();
+
+                    //Delete the journal image from FirebaseStorage
+                    imageRef.delete().addOnSuccessListener(unused1 -> {
+
+                        Toast.makeText(context , "Journal image deleted" , Toast.LENGTH_SHORT).show();
+
+                    }).addOnFailureListener(e -> {
+
+                        Toast.makeText(context , "" + e.getMessage() , Toast.LENGTH_SHORT).show();
+                    });
+
+                    dialog.dismiss();
 
                 }).addOnFailureListener(e -> {
 
                     Toast.makeText(context , "" + e.getMessage() , Toast.LENGTH_SHORT).show();
                 });
+            });
 
-           }).addOnFailureListener(e -> {
-
-                Toast.makeText(context , "" + e.getMessage() , Toast.LENGTH_SHORT).show();
-           });
+            cancelDialogButton.setOnClickListener(v12 -> {dialog.dismiss();});
         });
     }
 

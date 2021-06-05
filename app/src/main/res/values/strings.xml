@@ -16,4 +16,7 @@
     <string name="menu_title">Add Thought</string>
     <string name="signout">Signout</string>
     <string name="no_thought_hint">Write a Journal Entry by clicking the \"+\" icon</string>
+    <string name="item_dialog_text_view">Delete Journal?</string>
+    <string name="cancel_btn_text">Cancel</string>
+    <string name="delete_btn_text">Delete</string>
 </resources>
