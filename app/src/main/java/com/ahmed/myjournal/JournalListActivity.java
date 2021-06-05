@@ -114,7 +114,11 @@ public class JournalListActivity extends AppCompatActivity {
 
                         for(QueryDocumentSnapshot journals : queryDocumentSnapshots){
 
+                            String documentId = journals.getId();
+
                             Journal journal = journals.toObject(Journal.class);
+
+                            journal.setDocumentId(documentId);
 
                             journalList.add(journal);
                         }

@@ -149,6 +149,7 @@ public class PostJournalActivity extends AppCompatActivity implements View.OnCli
 
                         //Todo: create a journal object - model
                         Journal journal = new Journal();
+
                         journal.setTitle(title);
                         journal.setThought(thoughts);
                         journal.setImageUrl(imageUrl);

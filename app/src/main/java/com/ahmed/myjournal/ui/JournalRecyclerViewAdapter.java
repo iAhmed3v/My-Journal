@@ -14,6 +14,7 @@ import android.view.ViewGroup;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.core.content.FileProvider;
@@ -23,6 +24,12 @@ import com.ahmed.myjournal.BuildConfig;
 import com.ahmed.myjournal.R;
 import com.ahmed.myjournal.model.Journal;
 import com.google.android.gms.common.util.DataUtils;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
 import com.squareup.picasso.Picasso;
 import com.squareup.picasso.Transformation;
 
@@ -34,6 +41,10 @@ public class JournalRecyclerViewAdapter extends RecyclerView.Adapter<JournalRecy
 
     private Context context;
     private List<Journal> journalList;
+
+    private FirebaseFirestore db = FirebaseFirestore.getInstance();
+    private DocumentReference docRef;
+    private StorageReference imageRef;
 
     public JournalRecyclerViewAdapter(Context context , List <Journal> journalList) {
         this.context = context;
@@ -78,6 +89,38 @@ public class JournalRecyclerViewAdapter extends RecyclerView.Adapter<JournalRecy
                 .error(android.R.drawable.stat_notify_error)
                 .into(viewHolder.image);
 
+        //Deleting the journal
+        viewHolder.deleteButton.setOnClickListener(v -> {
+
+            docRef = db.collection("Journal").document(journalList.get(position).getDocumentId());
+
+            imageRef = FirebaseStorage.getInstance().getReferenceFromUrl(imageUrl);
+
+
+            //Delete the journal from FirebaseStore
+            docRef.delete().addOnSuccessListener(unused -> {
+
+                journalList.remove(journal);
+
+                notifyDataSetChanged();
+
+                Toast.makeText(context , "Journal deleted" + docRef.getId() , Toast.LENGTH_SHORT).show();
+
+                //Delete the journal image from FirebaseStorage
+                imageRef.delete().addOnSuccessListener(unused1 -> {
+
+                    Toast.makeText(context , "Journal image deleted" , Toast.LENGTH_SHORT).show();
+
+                }).addOnFailureListener(e -> {
+
+                    Toast.makeText(context , "" + e.getMessage() , Toast.LENGTH_SHORT).show();
+                });
+
+           }).addOnFailureListener(e -> {
+
+                Toast.makeText(context , "" + e.getMessage() , Toast.LENGTH_SHORT).show();
+           });
+        });
     }
 
     @Override
