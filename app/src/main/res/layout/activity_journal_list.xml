@@ -6,7 +6,7 @@
     android:layout_height="match_parent"
     android:padding="3dp"
     android:background="@drawable/gradient_background"
-    tools:context=".JournalListActivity">
+    tools:context=".activities.JournalListActivity">
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/recyclerView"
@@ -19,9 +19,12 @@
 
     <TextView
         android:id="@+id/listNoThought"
-        android:layout_width="300dp"
+        android:layout_width="match_parent"
         android:layout_height="50dp"
+        android:gravity="center"
         android:hint="@string/no_thought_hint"
+        android:textColorHint="@color/white"
+        android:textSize="18sp"
         android:visibility="invisible"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"

@@ -12,7 +12,7 @@
     <string name="username_hint">Username</string>
     <string name="post_title">Title</string>
     <string name="post_description">Your Thoughts</string>
-    <string name="post_btn">Save</string>
+    <string name="save_btn_text">Save</string>
     <string name="menu_title">Add Thought</string>
     <string name="signout">Signout</string>
     <string name="no_thought_hint">Write a Journal Entry by clicking the \"+\" icon</string>
