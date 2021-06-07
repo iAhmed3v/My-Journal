@@ -22,12 +22,13 @@ import androidx.appcompat.app.AlertDialog;
 import androidx.core.content.FileProvider;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.ahmed.myjournal.BuildConfig;
 import com.ahmed.myjournal.R;
+import com.ahmed.myjournal.UpdateJournalActivity;
 import com.ahmed.myjournal.model.Journal;
 import com.google.android.gms.common.util.DataUtils;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.BuildConfig;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.storage.FirebaseStorage;
@@ -146,6 +147,22 @@ public class JournalRecyclerViewAdapter extends RecyclerView.Adapter<JournalRecy
             });
 
             cancelDialogButton.setOnClickListener(v12 -> {dialog.dismiss();});
+        });
+
+        //Passing the journal info to UpdateJournalActivity
+        viewHolder.editButton.setOnClickListener(v -> {
+
+            Intent intent = new Intent(context , UpdateJournalActivity.class);
+
+            intent.putExtra("title" , journalList.get(position).getTitle());
+            intent.putExtra("thought" , journalList.get(position).getThought());
+            intent.putExtra("imageUrl" , journalList.get(position).getImageUrl());
+            intent.putExtra("userId" , journalList.get(position).getUserId());
+            intent.putExtra("userName" , journalList.get(position).getUserName());
+//            intent.putExtra("timeAdded" , timeAgo);
+            intent.putExtra("documentId" , journalList.get(position).getDocumentId());
+
+            context.startActivity(intent);
         });
     }
 

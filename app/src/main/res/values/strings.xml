@@ -19,4 +19,5 @@
     <string name="item_dialog_text_view">Delete Journal?</string>
     <string name="cancel_btn_text">Cancel</string>
     <string name="delete_btn_text">Delete</string>
+    <string name="post_update_btn">Update</string>
 </resources>

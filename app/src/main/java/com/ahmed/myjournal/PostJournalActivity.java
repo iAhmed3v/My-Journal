@@ -138,7 +138,7 @@ public class PostJournalActivity extends AppCompatActivity implements View.OnCli
             final StorageReference filepath = storageReference
                     .child("journal_images")
                     //We used the Timestamp here to make the images names different example: my_image_34452355
-                    .child("my_image_" + Timestamp.now().getSeconds());
+                    .child("image_" + Timestamp.now().getSeconds());
 
             filepath.putFile(imageUri)
                     .addOnSuccessListener(taskSnapshot -> filepath.getDownloadUrl().addOnSuccessListener(uri -> {
@@ -175,8 +175,6 @@ public class PostJournalActivity extends AppCompatActivity implements View.OnCli
 
                         Toast.makeText(PostJournalActivity.this , "" + e.getMessage() , Toast.LENGTH_SHORT).show();
                     });
-
-
         } else {
 
             progressBar.setVisibility(View.INVISIBLE);
