@@ -59,42 +59,36 @@ public class CreateAccountActivity extends AppCompatActivity {
         createEmailEditText = findViewById(R.id.createEmailTextView);
         createPasswordEditText = findViewById(R.id.createPasswordEditText);
 
-        authStateListener = new FirebaseAuth.AuthStateListener() {
-            @Override
-            public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
+        authStateListener = firebaseAuth -> {
 
-                currentUser = firebaseAuth.getCurrentUser();
+            currentUser = firebaseAuth.getCurrentUser();
 
-                if(currentUser != null){
-                    //user is already logged in..
+            if(currentUser != null){
+                //user is already logged in..
 
 
-                }else {
-                    // no user yet...
-
-                }
+            }else {
+                // no user yet...
 
             }
+
         };
 
-        signUpButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
+        signUpButton.setOnClickListener(v -> {
 
-                if(!TextUtils.isEmpty(createEmailEditText.getText().toString())
-                        && !TextUtils.isEmpty(createPasswordEditText.getText().toString())
-                        && !TextUtils.isEmpty(usernameEditText.getText().toString())){
+            if(!TextUtils.isEmpty(createEmailEditText.getText().toString())
+                    && !TextUtils.isEmpty(createPasswordEditText.getText().toString())
+                    && !TextUtils.isEmpty(usernameEditText.getText().toString())){
 
-                    String email = createEmailEditText.getText().toString().trim();
-                    String password = createPasswordEditText.getText().toString().trim();
-                    String username = usernameEditText.getText().toString().trim();
+                String email = createEmailEditText.getText().toString().trim();
+                String password = createPasswordEditText.getText().toString().trim();
+                String username = usernameEditText.getText().toString().trim();
 
-                    createUserEmailAccount(email, password, username);
+                createUserEmailAccount(email, password, username);
 
-                }else {
+            }else {
 
-                    Toast.makeText(CreateAccountActivity.this , "Please fill all the fields" , Toast.LENGTH_LONG).show();
-                }
+                Toast.makeText(CreateAccountActivity.this , "Please fill all the fields" , Toast.LENGTH_LONG).show();
             }
         });
     }
@@ -106,83 +100,60 @@ public class CreateAccountActivity extends AppCompatActivity {
             signUpProgressBar.setVisibility(View.VISIBLE);
 
             firebaseAuth.createUserWithEmailAndPassword(email, password)
-                    .addOnCompleteListener(new OnCompleteListener <AuthResult>() {
-                        @Override
-                        public void onComplete(@NonNull Task <AuthResult> task) {
+                    .addOnCompleteListener(task -> {
 
-                            if(task.isSuccessful()){
-                                //we take user to AddJournalActivity
-                                currentUser = firebaseAuth.getCurrentUser();
-                                assert currentUser != null;
-                                final String currentUserId = currentUser.getUid();
+                        if(task.isSuccessful()){
+                            //we take user to AddJournalActivity
+                            currentUser = firebaseAuth.getCurrentUser();
+                            assert currentUser != null;
+                            final String currentUserId = currentUser.getUid();
 
-                                //Create a user Map so we can create a user in the User Collection
-                                Map<String, String> userObject = new HashMap <>();
+                            //Create a user Map so we can create a user in the User Collection
+                            Map<String, String> userObject = new HashMap <>();
 
-                                userObject.put("userId", currentUserId);
-                                userObject.put("username", username);
+                            userObject.put("userId", currentUserId);
+                            userObject.put("username", username);
 
-                                //save to our FireStore Database
-                                collectionReference.add(userObject)
-                                        .addOnSuccessListener(new OnSuccessListener <DocumentReference>() {
-                                            @Override
-                                            public void onSuccess(DocumentReference documentReference) {
+                            //save to our FireStore Database
+                            collectionReference.add(userObject)
+                                    .addOnSuccessListener(documentReference -> {
+                                        documentReference.get()
+                                                .addOnCompleteListener(task1 -> {
 
-                                                documentReference.get()
-                                                        .addOnCompleteListener(new OnCompleteListener <DocumentSnapshot>() {
-                                                            @Override
-                                                            public void onComplete(@NonNull Task <DocumentSnapshot> task) {
+                                                    if(Objects.requireNonNull(task1.getResult()).exists()) {
 
-                                                                if(Objects.requireNonNull(task.getResult()).exists()){
+                                                        signUpProgressBar.setVisibility(View.INVISIBLE);
 
-                                                                    signUpProgressBar.setVisibility(View.INVISIBLE);
+                                                        String name = task1.getResult()
+                                                                .getString("username");
 
-                                                                    String name = task.getResult()
-                                                                            .getString("username");
+                                                        JournalApi journalApi = JournalApi.getInstance(); //Global API
 
-                                                                    JournalApi journalApi = JournalApi.getInstance(); //Global API
+                                                        journalApi.setUserId(currentUserId);
+                                                        journalApi.setUsername(name);
 
-                                                                    journalApi.setUserId(currentUserId);
-                                                                    journalApi.setUsername(name);
+                                                        Intent intent = new Intent(CreateAccountActivity.this , PostJournalActivity.class);
+                                                        intent.putExtra("username" , name);
+                                                        intent.putExtra("userId" , currentUserId);
+                                                        startActivity(intent);
 
-                                                                    Intent intent = new Intent(CreateAccountActivity.this, PostJournalActivity.class);
-                                                                    intent.putExtra("username", name);
-                                                                    intent.putExtra("userId", currentUserId);
-                                                                    startActivity(intent);
+                                                    } else {
 
-                                                                }else {
-
-                                                                    signUpProgressBar.setVisibility(View.INVISIBLE);
-                                                                }
-                                                            }
-                                                        });
-                                            }
-                                        })
-                                        .addOnFailureListener(new OnFailureListener() {
-                                            @Override
-                                            public void onFailure(@NonNull Exception e) {
-
-                                                Toast.makeText(CreateAccountActivity.this , "" + e.getMessage() , Toast.LENGTH_SHORT).show();
-                                            }
-                                        });
+                                                        signUpProgressBar.setVisibility(View.INVISIBLE);
+                                                    }
+                                                });
+                                    })
+                                    .addOnFailureListener(e -> Toast.makeText(CreateAccountActivity.this , "" + e.getMessage() , Toast.LENGTH_SHORT).show());
 
 
 
 
-                            }else {
-                                //something went wrong
-                                Toast.makeText(CreateAccountActivity.this , "" + task.getException() , Toast.LENGTH_SHORT).show();
-                            }
+                        }else {
+                            //something went wrong
+                            Toast.makeText(CreateAccountActivity.this , "" + task.getException() , Toast.LENGTH_SHORT).show();
                         }
                     })
-                    .addOnFailureListener(new OnFailureListener() {
-                        @Override
-                        public void onFailure(@NonNull Exception e) {
-
-                            Toast.makeText(CreateAccountActivity.this , "" + e.getMessage() , Toast.LENGTH_SHORT).show();
-
-                        }
-                    });
+                    .addOnFailureListener(e -> Toast.makeText(CreateAccountActivity.this , "" + e.getMessage() , Toast.LENGTH_SHORT).show());
 
         }else {
 
