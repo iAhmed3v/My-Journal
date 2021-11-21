@@ -8,6 +8,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
+import android.widget.Toast;
 
 import com.ahmed.myjournal.R;
 import com.google.firebase.auth.FirebaseAuth;
@@ -39,66 +40,57 @@ public class MainActivity extends AppCompatActivity {
 
 
         firebaseAuth = FirebaseAuth.getInstance();
-        authStateListener = new FirebaseAuth.AuthStateListener() {
-            @Override
-            public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
+        authStateListener = firebaseAuth -> {
+
+            currentUser = firebaseAuth.getCurrentUser();
+
+            if(currentUser != null) {
 
                 currentUser = firebaseAuth.getCurrentUser();
+                String currentUserId = currentUser.getUid();
 
-                if(currentUser != null) {
+                collectionReference
+                        .whereEqualTo("userId" , currentUserId)
+                        .addSnapshotListener((queryDocumentSnapshots , error) -> {
 
-                    currentUser = firebaseAuth.getCurrentUser();
-                    String currentUserId = currentUser.getUid();
+                            if(error != null) {
 
-                    collectionReference
-                            .whereEqualTo("userId" , currentUserId)
-                            .addSnapshotListener(new EventListener <QuerySnapshot>() {
-                                @Override
-                                public void onEvent(@Nullable QuerySnapshot queryDocumentSnapshots , @Nullable FirebaseFirestoreException error) {
+                                return;
+                            }
 
-                                    if(error != null) {
+                            String name;
 
-                                        return;
-                                    }
+                            if(!queryDocumentSnapshots.isEmpty()) {
 
-                                    String name;
+                                for(QueryDocumentSnapshot snapshot : queryDocumentSnapshots) {
 
-                                    if(!queryDocumentSnapshots.isEmpty()) {
+                                    JournalApi journalApi = JournalApi.getInstance();
 
-                                        for(QueryDocumentSnapshot snapshot : queryDocumentSnapshots) {
-
-                                            JournalApi journalApi = JournalApi.getInstance();
-
-                                            journalApi.setUserId(snapshot.getString("userId"));
-                                            journalApi.setUsername(snapshot.getString("username"));
+                                    journalApi.setUserId(snapshot.getString("userId"));
+                                    journalApi.setUsername(snapshot.getString("username"));
 
 
-                                            startActivity(new Intent(MainActivity.this , JournalListActivity.class));
-                                            finish();
-                                        }
-                                    }
+                                    startActivity(new Intent(MainActivity.this , JournalListActivity.class));
+                                    finish();
                                 }
-                            });
+                            }
+                        });
 
-                } else {
+            } else {
 
-
-                }
+                Toast.makeText(this , "There is not a current user" , Toast.LENGTH_SHORT).show();
             }
         };
 
         startButton = findViewById(R.id.startButton);
 
 
-        startButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
+        startButton.setOnClickListener(v -> {
 
-                //from here We go to LoginActivity
-                Intent intent = new Intent(MainActivity.this , LoginActivity.class);
-                startActivity(intent);
-                finish();
-            }
+            //from here We go to LoginActivity
+            Intent intent = new Intent(MainActivity.this , LoginActivity.class);
+            startActivity(intent);
+            finish();
         });
 
     }
