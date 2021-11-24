@@ -69,10 +69,10 @@ public class PostJournalActivity extends AppCompatActivity implements View.OnCli
         titleEditText = findViewById(R.id.title_edit_text);
         thoughtEditText = findViewById(R.id.thought_edit_text);
         currentUserTextView = findViewById(R.id.user_name_text);
-        imageView = findViewById(R.id.image_view);
 
         saveButton = findViewById(R.id.save_btn);
         saveButton.setOnClickListener(this);
+
         imageView = findViewById(R.id.image_view);
         imageView.setOnClickListener(this);
 
